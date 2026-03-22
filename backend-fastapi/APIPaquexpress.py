@@ -95,7 +95,7 @@ def get_db():
 # ENDPOINTS
 # =========================
 
-# REGISTRO (para pruebas)
+# REGISTRO 
 @app.post("/register")
 def register(username: str, password: str, db: Session = Depends(get_db)):
     hashed = hash_password(password)
