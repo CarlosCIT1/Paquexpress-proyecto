@@ -1,4 +1,4 @@
-CREATE DATABASE paquexpress_db;
+CREATE DATABASE IF NOT EXISTS paquexpress_db;
 USE paquexpress_db;
 
 -- =========================
@@ -7,7 +7,7 @@ USE paquexpress_db;
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL, -- va encriptada (bcrypt)
+    password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -22,7 +22,8 @@ CREATE TABLE paquetes (
     usuario_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    CONSTRAINT fk_paquetes_usuario 
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
         ON DELETE SET NULL
 );
 
@@ -32,11 +33,17 @@ CREATE TABLE paquetes (
 CREATE TABLE entregas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     paquete_id INT NOT NULL,
-    foto_ruta VARCHAR(255) NOT NULL, --  la ruta de la imagen
+    foto_ruta VARCHAR(255) NOT NULL,
     latitud DECIMAL(10,8) NOT NULL,
     longitud DECIMAL(11,8) NOT NULL,
     fecha_entrega TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (paquete_id) REFERENCES paquetes(id)
-        ON DELETE CASCADE
+    usuario_id INT, 
+    
+    CONSTRAINT fk_entregas_paquete 
+        FOREIGN KEY (paquete_id) REFERENCES paquetes(id)
+        ON DELETE CASCADE,
+    
+    CONSTRAINT fk_entregas_usuario 
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+        ON DELETE SET NULL
 );
