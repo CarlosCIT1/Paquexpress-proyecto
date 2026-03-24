@@ -115,8 +115,3 @@ Si se usa dispositivo físico, cambiar por la IP del equipo.
 - Validación de usuario en endpoints protegidos
 
 ==================================================
-
-## Autor
-
-Proyecto desarrollado para la materia  
-Análisis y Diseño de Software  
