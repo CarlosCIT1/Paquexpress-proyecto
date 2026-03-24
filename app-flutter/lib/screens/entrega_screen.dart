@@ -50,7 +50,6 @@ class _EntregaScreenState extends State<EntregaScreen> {
     _mapController.move(LatLng(pos.latitude, pos.longitude), 16.0);
   }
 
-  // FUNCIÓN PARA MOVER LA CÁMARA AL DESTINO
   void irADestino() {
     final LatLng destino = _direccionALatLng(widget.direccion);
     _mapController.move(destino, 16.0);
@@ -74,7 +73,9 @@ class _EntregaScreenState extends State<EntregaScreen> {
 
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt("user_id");
-    if (userId == null) {
+    final token = prefs.getString("token"); // 🔥 agregado
+
+    if (userId == null || token == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Error de sesión")),
@@ -87,13 +88,21 @@ class _EntregaScreenState extends State<EntregaScreen> {
 
     try {
       var request = http.MultipartRequest("POST", Uri.parse("$baseUrl/entrega"));
+
+      // 🔥 HEADER CON TOKEN (LO IMPORTANTE)
+      request.headers['Authorization'] = 'Bearer $token';
+
       request.fields["paquete_id"] = widget.paqueteId.toString();
       request.fields["usuario_id"] = userId.toString();
       request.fields["latitud"] = posicion!.latitude.toString();
       request.fields["longitud"] = posicion!.longitude.toString();
-      request.files.add(await http.MultipartFile.fromPath("foto", imagen!.path));
+
+      request.files.add(
+        await http.MultipartFile.fromPath("foto", imagen!.path),
+      );
 
       var response = await request.send();
+
       if (response.statusCode == 200) {
         if (!mounted) return;
         Navigator.pop(context);
@@ -105,7 +114,9 @@ class _EntregaScreenState extends State<EntregaScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     } finally {
       if (!mounted) return;
       setState(() => enviando = false);
@@ -193,7 +204,6 @@ class _EntregaScreenState extends State<EntregaScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            // BOTONES DE ACCIÓN (FOTO Y FINALIZAR)
             Row(
               children: [
                 Expanded(
@@ -218,7 +228,6 @@ class _EntregaScreenState extends State<EntregaScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            // BOTONES DE NAVEGACIÓN DEL MAPA
             Row(
               children: [
                 Expanded(
