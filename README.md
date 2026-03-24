@@ -23,8 +23,22 @@ https://github.com/CarlosCIT1/Paquexpress-proyecto/tree/main/app-flutter
 
 ### 1. Clonar el repositorio
 
+El proyecto ya incluye la base de datos, backend y aplicación Flutter dentro del mismo repositorio.
+
 git clone https://github.com/CarlosCIT1/Paquexpress-proyecto.git
 cd Paquexpress-proyecto
+
+Nota:
+No es necesario crear un proyecto Flutter nuevo, ya que la aplicación ya está incluida en la carpeta app-flutter.
+Solo se deben instalar las dependencias y ejecutar el proyecto.
+
+--------------------------------------------------
+
+### Estructura del proyecto
+
+- Database → contiene el script SQL de la base de datos  
+- backend-fastapi → contiene la API desarrollada en FastAPI  
+- app-flutter → contiene la aplicación móvil en Flutter  
 
 --------------------------------------------------
 
@@ -133,3 +147,10 @@ También permite abrir la dirección en Google Maps externamente.
 - La API debe estar en ejecución antes de usar la app  
 - La URL del backend puede modificarse en api_service.dart  
 - Proyecto desarrollado con fines académicos  
+
+==================================================
+
+## Autor
+
+Proyecto desarrollado para la materia  
+Análisis y Diseño de Software  
