@@ -15,7 +15,7 @@ import time
 # =========================
 # CONFIGURACION
 # =========================
-DATABASE_URL = "mysql+pymysql://root:tele2006s@localhost/paquexpress_db"
+DATABASE_URL = "mysql+pymysql://root:password@localhost/paquexpress_db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
