@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart'; // Para kIsWeb
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,7 +28,11 @@ class EntregaScreen extends StatefulWidget {
 }
 
 class _EntregaScreenState extends State<EntregaScreen> {
-  File? imagen;
+  // --- CAMBIOS AQUÍ ---
+  XFile? imagenArchivo; 
+  Uint8List? imagenBytes; 
+  // --------------------
+  
   Position? posicion;
   bool enviando = false;
   final String baseUrl = "http://127.0.0.1:8000";
@@ -36,7 +41,15 @@ class _EntregaScreenState extends State<EntregaScreen> {
 
   Future<void> tomarFoto() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (picked != null && mounted) setState(() => imagen = File(picked.path));
+    if (picked != null && mounted) {
+      // --- CAMBIOS AQUÍ ---
+      final bytes = await picked.readAsBytes();
+      setState(() {
+        imagenArchivo = picked;
+        imagenBytes = bytes;
+      });
+      // --------------------
+    }
   }
 
   Future<void> obtenerGPS() async {
@@ -63,7 +76,7 @@ class _EntregaScreenState extends State<EntregaScreen> {
   }
 
   Future<void> enviar() async {
-    if (imagen == null || posicion == null) {
+    if (imagenArchivo == null || posicion == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Falta foto o GPS")),
@@ -73,7 +86,7 @@ class _EntregaScreenState extends State<EntregaScreen> {
 
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt("user_id");
-    final token = prefs.getString("token"); // 🔥 agregado
+    final token = prefs.getString("token");
 
     if (userId == null || token == null) {
       if (!mounted) return;
@@ -88,8 +101,6 @@ class _EntregaScreenState extends State<EntregaScreen> {
 
     try {
       var request = http.MultipartRequest("POST", Uri.parse("$baseUrl/entrega"));
-
-      // 🔥 HEADER CON TOKEN (LO IMPORTANTE)
       request.headers['Authorization'] = 'Bearer $token';
 
       request.fields["paquete_id"] = widget.paqueteId.toString();
@@ -97,9 +108,21 @@ class _EntregaScreenState extends State<EntregaScreen> {
       request.fields["latitud"] = posicion!.latitude.toString();
       request.fields["longitud"] = posicion!.longitude.toString();
 
-      request.files.add(
-        await http.MultipartFile.fromPath("foto", imagen!.path),
-      );
+      // --- CAMBIOS AQUÍ PARA COMPATIBILIDAD ---
+      if (kIsWeb) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            "foto",
+            imagenBytes!,
+            filename: "entrega.jpg",
+          ),
+        );
+      } else {
+        request.files.add(
+          await http.MultipartFile.fromPath("foto", imagenArchivo!.path),
+        );
+      }
+      // ---------------------------------------
 
       var response = await request.send();
 
@@ -165,11 +188,15 @@ class _EntregaScreenState extends State<EntregaScreen> {
                 border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: imagen == null
+              child: imagenArchivo == null
                   ? const Icon(Icons.camera_alt, size: 50, color: Colors.grey)
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.file(imagen!, fit: BoxFit.cover),
+                      // --- CAMBIOS AQUÍ ---
+                      child: kIsWeb
+                          ? Image.memory(imagenBytes!, fit: BoxFit.cover)
+                          : Image.file(File(imagenArchivo!.path), fit: BoxFit.cover),
+                      // --------------------
                     ),
             ),
             const SizedBox(height: 20),
