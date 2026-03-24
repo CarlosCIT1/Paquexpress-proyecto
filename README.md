@@ -4,76 +4,53 @@ Aplicación móvil desarrollada en Flutter para la gestión de entregas de paque
 
 ==================================================
 
-## Repositorio del proyecto
-
-El proyecto está dividido en tres partes principales:
-
-Base de datos:
-https://github.com/CarlosCIT1/Paquexpress-proyecto/tree/main/Database  
-
-Backend (FastAPI):
-https://github.com/CarlosCIT1/Paquexpress-proyecto/tree/main/backend-fastapi  
-
-Aplicación Flutter:
-https://github.com/CarlosCIT1/Paquexpress-proyecto/tree/main/app-flutter  
+## Instalación completa del proyecto
 
 ==================================================
 
-## Instalación completa del proyecto
+## 1. Base de Datos (MySQL)
 
-### 1. Clonar el repositorio
+1. Abrir MySQL Workbench o consola de MySQL.
 
-El proyecto ya incluye la base de datos, backend y aplicación Flutter dentro del mismo repositorio.
-
-git clone https://github.com/CarlosCIT1/Paquexpress-proyecto.git
-cd Paquexpress-proyecto
-
-Nota:
-No es necesario crear un proyecto Flutter nuevo, ya que la aplicación ya está incluida en la carpeta app-flutter.
-Solo se deben instalar las dependencias y ejecutar el proyecto.
-
---------------------------------------------------
-
-### Estructura del proyecto
-
-- Database → contiene el script SQL de la base de datos  
-- backend-fastapi → contiene la API desarrollada en FastAPI  
-- app-flutter → contiene la aplicación móvil en Flutter  
-
---------------------------------------------------
-
-### 2. Configuración de la Base de Datos (MySQL)
-
-1. Crear la base de datos:
+2. Crear la base de datos:
 
 CREATE DATABASE paquexpress_db;
 
-2. Acceder a la carpeta:
-
-cd Database
-
-3. Ejecutar el script SQL:
+3. Seleccionar la base de datos:
 
 USE paquexpress_db;
-SOURCE script.sql;
+
+4. Ir al repositorio y abrir el archivo:
+
+Database/DBscript.sql
+
+5. Copiar TODO el contenido del archivo y pegarlo en MySQL.
+
+6. Ejecutar el script para crear las tablas.
 
 --------------------------------------------------
 
-### 3. Configuración del Backend (FastAPI)
+## 2. Backend (FastAPI)
 
-1. Acceder a la carpeta:
+1. Ir a la carpeta del backend:
 
-cd backend-fastapi
+backend-fastapi
 
 2. Instalar dependencias:
 
 pip install fastapi uvicorn sqlalchemy pymysql "passlib[bcrypt]" "python-jose[cryptography]" python-multipart cryptography bcrypt==3.2.0 pydantic
 
-3. Ejecutar el servidor:
+3. Verificar configuración de la base de datos en el archivo apiPaquexpress.py:
 
-uvicorn main:app --reload
+DATABASE_URL = "mysql+pymysql://root:TU_PASSWORD@localhost/paquexpress_db"
 
-4. Acceso:
+Cambiar TU_PASSWORD por la contraseña de MySQL.
+
+4. Ejecutar el servidor:
+
+uvicorn apiPaquexpress:app --reload
+
+5. Verificar funcionamiento:
 
 API:
 http://127.0.0.1:8000  
@@ -83,9 +60,9 @@ http://127.0.0.1:8000/docs
 
 --------------------------------------------------
 
-### 4. Configuración de la Aplicación Flutter
+## 3. Aplicación Flutter
 
-1. Acceder a la carpeta:
+1. Ir a la carpeta del proyecto:
 
 cd app-flutter
 
@@ -93,60 +70,49 @@ cd app-flutter
 
 flutter pub get
 
-3. Ejecutar la app:
+Dependencias utilizadas:
+- http
+- image_picker
+- geolocator
+- shared_preferences
+- flutter_map
+- latlong2
+- url_launcher
+- flutter_map_cancellable_tile_provider
+
+3. Ejecutar la aplicación:
 
 flutter run
+
+--------------------------------------------------
+
+## Importante
+
+- El backend debe estar corriendo antes de iniciar la app.
+- La URL de la API se encuentra en api_service.dart:
+
+const baseUrl = "http://127.0.0.1:8000";
+
+Si se usa dispositivo físico, cambiar por la IP del equipo.
 
 ==================================================
 
 ## Funcionalidades
 
-- Inicio de sesión con autenticación JWT  
-- Visualización de paquetes asignados  
-- Captura de imagen como evidencia de entrega  
-- Obtención de ubicación GPS  
-- Visualización de mapa interactivo  
-- Registro de entrega en base de datos  
+- Inicio de sesión con JWT
+- Consulta de paquetes asignados
+- Captura de imagen como evidencia
+- Obtención de ubicación GPS
+- Visualización de mapa
+- Registro de entrega en base de datos
 
 ==================================================
 
 ## Seguridad
 
-- Contraseñas encriptadas con bcrypt  
-- Autenticación mediante JWT  
-- Protección de endpoints mediante token  
-- Validación de usuario en el registro de entregas  
-
-==================================================
-
-## Evidencia de entrega
-
-Cada entrega incluye:
-
-- Imagen capturada desde la aplicación  
-- Coordenadas GPS  
-- Relación con el paquete y el usuario  
-
-Las imágenes se almacenan en el servidor dentro de la carpeta /images.
-
-==================================================
-
-## Mapas
-
-La aplicación utiliza flutter_map con OpenStreetMap para mostrar:
-
-- Ubicación actual del usuario  
-- Ubicación del destino  
-
-También permite abrir la dirección en Google Maps externamente.
-
-==================================================
-
-## Notas importantes
-
-- La API debe estar en ejecución antes de usar la app  
-- La URL del backend puede modificarse en api_service.dart  
-- Proyecto desarrollado con fines académicos  
+- Encriptación de contraseñas con bcrypt
+- Autenticación con JWT
+- Validación de usuario en endpoints protegidos
 
 ==================================================
 
